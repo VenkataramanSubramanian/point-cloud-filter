@@ -46,5 +46,5 @@ filtered_cloud = do_passthrough_filter(point_cloud = cloud,
 
 # Separate the table from everything else
 table_cloud, objects_cloud = do_ransac_plane_segmentation(filtered_cloud, max_distance = 0.01)
-pcl.save(objects_cloud, 'objects.pcd');
+pcl.save(objects_cloud, 'results.pcd')
 
