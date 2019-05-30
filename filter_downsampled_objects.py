@@ -19,6 +19,7 @@ def do_ransac_plane_segmentation(point_cloud, max_distance = 0.01):
   #obtain inlier indices and model coefficients
   inlier_indices, _ = segmenter.segment()
 
+  #This seperates the plain from the object
   inliers = point_cloud.extract(inlier_indices, negative = False)
   outliers = point_cloud.extract(inlier_indices, negative = True)
 
@@ -29,6 +30,7 @@ def get_clusters(cloud, tolerance, min_size, max_size , cluster_type='hdbscan'):
 
   clusters=[]
 
+  #clustring the object point cloud based on clustering techniques
   if(cluster_type=='hdbscan'):
     clusterer = hdbscan.HDBSCAN(metric='euclidean',min_cluster_size=min_size, gen_min_span_tree=True)
     clusterer.fit(np.asarray(cloud.to_list()))
@@ -69,7 +71,7 @@ def get_colored_clusters(clusters, cloud):
     float_rgb=get_floatrgb(color)
     get_color_list.append(float_rgb)
 
-  #assert len(get_color_list)==number_of_clusters
+  assert len(get_color_list)==number_of_clusters
 
   colored_points = []
   total=0
@@ -88,7 +90,6 @@ def get_colored_clusters(clusters, cloud):
   return colored_points
 
 ##################################################################################
-# This pipeline separates the objects in the table from the given scene
 
 start=time.time()
 
@@ -109,7 +110,7 @@ table_cloud, objects_cloud = do_ransac_plane_segmentation(filtered_cloud, max_di
 colorless_cloud = XYZRGB_to_XYZ(objects_cloud)
 
 #DBSCAN or HDBSCAN clustering
-clusters = get_clusters(colorless_cloud, tolerance = 0.05, min_size = 100, max_size = 1500 , cluster_type='hdbscan')
+clusters = get_clusters(colorless_cloud, tolerance = 0.1, min_size = 75, max_size = 1500 , cluster_type='hdbscan')
 colored_points = get_colored_clusters(clusters, colorless_cloud)
 clusters_cloud = pcl.PointCloud_PointXYZRGB()
 clusters_cloud.from_list(colored_points)
